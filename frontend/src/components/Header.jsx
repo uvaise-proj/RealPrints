@@ -6,8 +6,9 @@ const TITLES = {
   form:    'Log Stage Data',
 }
 
-// title prop overrides the step-based title and hides the step dots.
-export default function Header({ step, onBack, title }) {
+// title overrides the step-based title and hides step dots.
+// onLogout renders a logout button on the right when title is provided.
+export default function Header({ step, onBack, title, onLogout }) {
   const displayTitle = title ?? TITLES[step] ?? step
 
   return (
@@ -26,10 +27,17 @@ export default function Header({ step, onBack, title }) {
           <span className="header__step">{displayTitle}</span>
         </div>
 
-        {title
-          ? <div className="header__spacer" />
-          : <StepIndicator step={step} />
-        }
+        {title ? (
+          onLogout ? (
+            <button className="header__logout" onClick={onLogout} aria-label="Sign out">
+              ⎋
+            </button>
+          ) : (
+            <div className="header__spacer" />
+          )
+        ) : (
+          <StepIndicator step={step} />
+        )}
       </div>
     </header>
   )

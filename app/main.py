@@ -7,7 +7,8 @@ from fastapi.responses import JSONResponse
 
 from app.config import settings
 from app.database import Base, engine
-from app.routers import analytics, process, projects, recommend
+from app.models import user  # noqa: F401 — ensures User table is created by create_all
+from app.routers import analytics, auth, process, projects, recommend
 
 logging.basicConfig(
     level=getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO),
@@ -40,6 +41,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth.router)
 app.include_router(projects.router)
 app.include_router(recommend.router)
 app.include_router(process.router)

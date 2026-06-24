@@ -64,6 +64,7 @@ class ProcessCreate(BaseModel):
 class ProcessLogResponse(BaseModel):
     id: int
     project_id: str
+    operator_id: Optional[int]
     process_type: ProcessType
     data: dict[str, Any]
     quality_rating: Optional[int]

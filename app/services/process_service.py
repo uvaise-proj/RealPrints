@@ -9,18 +9,25 @@ from app.schemas.process_log import ProcessCreate
 logger = logging.getLogger(__name__)
 
 
-def add_process_log(db: Session, data: ProcessCreate) -> ProcessLog:
+def add_process_log(
+    db: Session,
+    data: ProcessCreate,
+    operator_id: int | None = None,
+) -> ProcessLog:
     log = ProcessLog(
         project_id=data.project_id,
+        operator_id=operator_id,
         process_type=data.process_type.value,
         data=data.data,
+        quality_rating=data.quality_rating,
+        success=data.success,
     )
     db.add(log)
     db.commit()
     db.refresh(log)
     logger.info(
-        "Process log created: id=%s project=%s type=%s",
-        log.id, log.project_id, log.process_type,
+        "Process log created: id=%s project=%s type=%s operator=%s",
+        log.id, log.project_id, log.process_type, operator_id,
     )
     return log
 

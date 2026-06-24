@@ -10,5 +10,9 @@ class Settings(BaseSettings):
     APP_HOST: str = "0.0.0.0"
     APP_PORT: int = 8000
 
+    JWT_SECRET_KEY:     str = "change-me-before-production"
+    JWT_ALGORITHM:      str = "HS256"
+    JWT_EXPIRE_MINUTES: int = 480   # 8-hour shift
+
 
 settings = Settings()

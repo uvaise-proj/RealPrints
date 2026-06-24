@@ -1,10 +1,21 @@
+import { clearSession, getToken } from '../auth.js'
+
 const BASE = import.meta.env.VITE_API_BASE_URL ?? ''
 
 export async function request(path, options = {}) {
+  const token = getToken()
+  const authHeader = token ? { Authorization: `Bearer ${token}` } : {}
+
   const res = await fetch(`${BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options.headers },
+    headers: { 'Content-Type': 'application/json', ...authHeader, ...options.headers },
     ...options,
   })
+
+  if (res.status === 401) {
+    clearSession()
+    window.dispatchEvent(new Event('rp:unauthorized'))
+    throw new Error('Session expired. Please sign in again.')
+  }
 
   if (!res.ok) {
     let detail = `Request failed (HTTP ${res.status})`

@@ -24,6 +24,11 @@ class ProcessLog(Base):
         ForeignKey("projects.project_id", ondelete="CASCADE"),
         nullable=False,
     )
+    operator_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     process_type = Column(SAEnum(ProcessType), nullable=False)
     data = Column(JSONB, nullable=False)
     quality_rating = Column(Integer, nullable=True)       # 1–5, recorded after QC

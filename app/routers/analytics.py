@@ -6,13 +6,19 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.process_log import ProcessType
+from app.models.user import User
 from app.schemas.analytics import BestConfigResponse, FailureRateResponse, SummaryResponse
 from app.schemas.project import GarmentMaterial
 from app.services import analytics_service
+from app.services.auth_service import get_current_user
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/analytics", tags=["Analytics"])
+router = APIRouter(
+    prefix="/analytics",
+    tags=["Analytics"],
+    dependencies=[Depends(get_current_user)],
+)
 
 
 @router.get(
