@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import enum
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 # ── Enums (mirror models, kept in schemas for Pydantic validation) ─────────────
@@ -58,8 +58,16 @@ class ProjectCreate(BaseModel):
     # Basic Info
     project_id: str = Field(..., min_length=1, max_length=100, examples=["PRJ-001"])
     client_name: str = Field(..., min_length=1, max_length=255)
-    date: date
+    date: Optional[date] = None
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
     order_quantity: int = Field(..., gt=0)
+
+    @model_validator(mode="after")
+    def validate_date_range(self) -> "ProjectCreate":
+        if self.start_date and self.end_date and self.end_date < self.start_date:
+            raise ValueError("end_date must be greater than or equal to start_date")
+        return self
 
     # Material & Surface
     garment_material: GarmentMaterial
@@ -97,7 +105,9 @@ class ProjectCreate(BaseModel):
 class ProjectResponse(BaseModel):
     project_id: str
     client_name: str
-    date: date
+    date: Optional[date]
+    start_date: Optional[datetime]
+    end_date: Optional[datetime]
     order_quantity: int
 
     garment_material: GarmentMaterial

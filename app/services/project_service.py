@@ -16,6 +16,8 @@ def create_project(db: Session, data: ProjectCreate) -> Project:
         project_id=data.project_id,
         client_name=data.client_name,
         date=data.date,
+        start_date=data.start_date,
+        end_date=data.end_date,
         order_quantity=data.order_quantity,
         garment_material=data.garment_material.value,
         fabric_weight_gsm=data.fabric_weight_gsm,

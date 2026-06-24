@@ -1,6 +1,6 @@
 import enum
 from sqlalchemy import (
-    Column, String, Integer, Float, Boolean, Text, Date,
+    Column, String, Integer, Float, Boolean, Text, Date, DateTime,
     Enum as SAEnum, CheckConstraint,
 )
 from app.database import Base
@@ -48,7 +48,9 @@ class Project(Base):
     # ── Basic Info ────────────────────────────────────────────────────────────
     project_id = Column(String(100), primary_key=True, index=True)
     client_name = Column(String(255), nullable=False)
-    date = Column(Date, nullable=False)
+    date = Column(Date, nullable=True)
+    start_date = Column(DateTime(timezone=True), nullable=True)
+    end_date = Column(DateTime(timezone=True), nullable=True)
     order_quantity = Column(Integer, nullable=False)
 
     # ── Material & Surface ────────────────────────────────────────────────────
