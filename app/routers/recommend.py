@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.schemas.process_log import StageRecommendRequest, StageRecommendResponse
 from app.schemas.project import RecommendRequest, RecommendResponse
 from app.services import recommendation_service
 
@@ -23,3 +24,12 @@ def recommend(
     db: Session = Depends(get_db),
 ):
     return recommendation_service.get_recommendations(db, payload, top_n=top_n)
+
+
+@router.post(
+    "/stage",
+    response_model=StageRecommendResponse,
+    summary="Recommend optimal stage parameters from historical successful process logs",
+)
+def recommend_stage(payload: StageRecommendRequest, db: Session = Depends(get_db)):
+    return recommendation_service.get_stage_recommendations(db, payload)

@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field, model_validator
 
 from app.models.process_log import ProcessType
+from app.schemas.project import GarmentMaterial
 
 
 # ── Per-stage data schemas ─────────────────────────────────────────────────────
@@ -44,12 +45,14 @@ _STAGE_VALIDATORS: dict[ProcessType, type[BaseModel]] = {
 }
 
 
-# ── Request / response schemas ─────────────────────────────────────────────────
+# ── Process log CRUD schemas ───────────────────────────────────────────────────
 
 class ProcessCreate(BaseModel):
     project_id: str = Field(..., min_length=1, max_length=100)
     process_type: ProcessType
     data: dict[str, Any]
+    quality_rating: Optional[int] = Field(None, ge=1, le=5)
+    success: bool = False
 
     @model_validator(mode="after")
     def validate_stage_data(self) -> "ProcessCreate":
@@ -63,6 +66,8 @@ class ProcessLogResponse(BaseModel):
     project_id: str
     process_type: ProcessType
     data: dict[str, Any]
+    quality_rating: Optional[int]
+    success: bool
     timestamp: datetime
 
     model_config = {"from_attributes": True}
@@ -72,3 +77,22 @@ class ProjectProcessResponse(BaseModel):
     project_id: str
     total: int
     stages: list[ProcessLogResponse]
+
+
+# ── Stage recommendation schemas ───────────────────────────────────────────────
+
+class StageRecommendRequest(BaseModel):
+    process_type: ProcessType
+    garment_material: GarmentMaterial
+    image_color_count: Optional[int] = Field(
+        None, ge=1,
+        description="Number of colours in the image; maps to project.colour_layers",
+    )
+
+
+class StageRecommendResponse(BaseModel):
+    process_type: ProcessType
+    recommended_values: dict[str, Any]
+    confidence: float = Field(..., ge=0.0, le=1.0, description="0–1 confidence score")
+    based_on_samples: int
+    message: str

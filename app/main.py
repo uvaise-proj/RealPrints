@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 
 from app.config import settings
 from app.database import Base, engine
-from app.routers import projects, recommend, process
+from app.routers import analytics, process, projects, recommend
 
 logging.basicConfig(
     level=getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO),
@@ -43,6 +43,7 @@ app.add_middleware(
 app.include_router(projects.router)
 app.include_router(recommend.router)
 app.include_router(process.router)
+app.include_router(analytics.router)
 
 
 @app.exception_handler(Exception)
